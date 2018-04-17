@@ -46,7 +46,6 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
         if (filename.equals("$Recycle.Bin")) return FileVisitResult.SKIP_SUBTREE;
         if (filename.equals(".Trash-1000")) return FileVisitResult.SKIP_SUBTREE;
 
-        handleEntry(basicFileAttributes, fullname, (Path)o);
         return FileVisitResult.CONTINUE;
     }
 

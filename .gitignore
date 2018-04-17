@@ -2,3 +2,7 @@
 out/
 target/
 *.iml
+
+
+# I don't want my passwords inside a git repositiory ;)
+DatabaseConfiguration.java

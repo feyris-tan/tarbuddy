@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class Main
 {
-    final static int tapeLength = 10;
+    final static int tapeLength = 19;
     final static Unit tapeLengthUnit = Unit.GIGA;
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
