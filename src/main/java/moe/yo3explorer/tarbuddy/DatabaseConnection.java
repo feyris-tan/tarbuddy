@@ -28,7 +28,7 @@ public class DatabaseConnection implements Closeable, AutoCloseable
         maxLen /= 1024; //mb
         if (maxLen < 10)
         {
-            throw new SQLException("Please set max_allowed_packet to at least 10MB and try again!");
+            throw new SQLException("Please set max_allowed_packet to at least 10MB and try again!\n Try: SET GLOBAL max_allowed_packet=20000000");
         }
         resultSet.close();
 

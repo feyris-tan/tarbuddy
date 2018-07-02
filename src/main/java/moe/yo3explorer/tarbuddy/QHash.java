@@ -10,7 +10,7 @@ class QHash
 {
     private static final long _128kb = 128 * 1000;
 
-    public static StringBuffer QHash(BasicFileAttributes basicFileAttributes, Path fullname) {
+    public static StringBuffer QHash(BasicFileAttributes basicFileAttributes, Path fullname) throws QHashException {
         ByteBuffer buffer = ByteBuffer.allocate((int)_128kb);
         FileChannel fc = null;
         try {
@@ -37,7 +37,7 @@ class QHash
             }
             return sb;
         } catch (Exception e) {
-            throw new RuntimeException("Could not compute QHash.",e);
+            throw new QHashException(e);
         }
     }
 }

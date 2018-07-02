@@ -135,7 +135,13 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
         ArchiveEntry dbEntry;
         if (basicFileAttributes.size() > _100mb)
         {
-            StringBuffer sb = QHash.QHash(basicFileAttributes, originalPath);
+            StringBuffer sb = null;
+            try {
+                sb = QHash.QHash(basicFileAttributes, originalPath);
+            } catch (QHashException e) {
+                System.out.printf("Could not calculate hash of %s",fullname);
+                return;
+            }
             String result = sb.toString();
             ae = new ArchiveEntry("");
             ae.setHash(result);
