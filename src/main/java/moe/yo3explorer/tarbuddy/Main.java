@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.LinkedList;
 
 public class Main
 {
-    final static int tapeLength = 99;
+    final static int tapeLength = 19;
     final static Unit tapeLengthUnit = Unit.GIGA;
 
     public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
@@ -30,7 +32,12 @@ public class Main
         }
 
         for (Path path : paths) {
-            System.out.println("Begin walking the file tree of: " + path.toString());
+            String pathString = path.toString();
+            if (pathString.length() == 3 && pathString.endsWith(":\\"))
+            {
+                callWindowsDiskCleanup(pathString);
+            }
+            System.out.println("Begin walking the file tree of: " + pathString);
             Files.walkFileTree(path,tbfv);
             if (tbfv.isConsideredFull()) {
                 System.out.println("Tape is considered full.");
@@ -46,6 +53,15 @@ public class Main
         System.out.println("Merging file list...");
         dbc.merge(tape);
         dbc.close();
+
+        Hashtable<String, Long> hugeFiles = tbfv.getHugeFiles();
+        Enumeration<String> keys = hugeFiles.keys();
+        while (keys.hasMoreElements())
+        {
+            String s = keys.nextElement();
+            long k = hugeFiles.get(s);
+            System.out.printf("Huge file: %s (%d bytes)",s,k);
+        }
     }
 
     private static Iterable<Path> parseArgs(String[] args, Iterable<Path> paths) {
@@ -61,5 +77,20 @@ public class Main
             paths = argList;
         }
         return paths;
+    }
+
+    private static void callWindowsDiskCleanup(String disk)
+    {
+        try {
+            System.out.println("Calling cleaning manager for: " + disk);
+            ProcessBuilder pb = new ProcessBuilder("cleanmgr","/verylowdisk", "/d" + disk.substring(0,2).toUpperCase());
+            Process process = pb.start();
+            Thread.sleep(10 * 1000);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

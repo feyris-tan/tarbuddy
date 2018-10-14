@@ -10,6 +10,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Hashtable;
 
 public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseable
 {
@@ -22,6 +23,7 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
         scanned = 0;
         outputFile = new ByteArrayOutputStream();
         outputPrintStream = new PrintStream(outputFile);
+        hugeFiles = new Hashtable<>();
     }
 
     private HashSet<ArchiveEntry> filesOnTape;
@@ -33,6 +35,7 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
     private long scanned;
     ByteArrayOutputStream outputFile;
     PrintStream outputPrintStream;
+    private Hashtable<String,Long> hugeFiles;
 
     @Override
     public FileVisitResult preVisitDirectory(Object o, BasicFileAttributes basicFileAttributes) throws IOException {
@@ -151,6 +154,9 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
             else
                 merge = true;
 
+            if (merge)
+                hugeFiles.put(fullname,basicFileAttributes.size());
+
             ae.setSize(basicFileAttributes.size());
             if (ae.getCtime() != null) ae.setCtime(new Timestamp(basicFileAttributes.creationTime().toMillis()));
             if (ae.getMtime() != null) ae.setMtime(new Timestamp(basicFileAttributes.lastModifiedTime().toMillis()));
@@ -220,5 +226,9 @@ public class TarBuddyFileVisitor implements FileVisitor, Closeable, AutoCloseabl
     public ByteArrayOutputStream getOutputFile() {
         outputPrintStream.flush();
         return outputFile;
+    }
+
+    public Hashtable<String, Long> getHugeFiles() {
+        return hugeFiles;
     }
 }
